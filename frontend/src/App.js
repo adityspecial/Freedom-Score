@@ -25,14 +25,30 @@ function App() {
       setUser(JSON.parse(userData));
     }
     
-    // Check for OAuth callback
+    // Check for OAuth callback with token
     const urlParams = new URLSearchParams(window.location.search);
     const authStatus = urlParams.get('auth');
+    const authToken = urlParams.get('token');
+    const userEmail = urlParams.get('user');
+    const userName = urlParams.get('name');
     
-    if (authStatus === 'success') {
-      // Clear URL params and reload to get fresh state
+    if (authStatus === 'success' && authToken && userEmail) {
+      // Store token and user data from OAuth callback
+      localStorage.setItem('access_token', authToken);
+      localStorage.setItem('user_data', JSON.stringify({
+        email: userEmail,
+        name: userName,
+        id: userEmail
+      }));
+      
+      setUser({
+        email: userEmail,
+        name: userName,
+        id: userEmail
+      });
+      
+      // Clear URL params
       window.history.replaceState({}, '', window.location.pathname);
-      window.location.reload();
     } else if (authStatus === 'error') {
       setError('Google Calendar authorization failed. Please try again.');
     }
