@@ -110,7 +110,7 @@ def get_calendar_service(access_token: str):
 def format_calendar_events(events: List[Dict]) -> str:
     """Format Google Calendar events into readable text for AI analysis"""
     if not events:
-        return "No meetings found in the specified time period."
+        return "No scheduled commitments found in the specified time period."
     
     formatted_events = []
     for event in events:
@@ -139,7 +139,7 @@ def format_calendar_events(events: List[Dict]) -> str:
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
-    return {"message": "Meeting Oppression Calculator API with Google Calendar"}
+    return {"message": "Liberty Tracker - Time Freedom Calculator API 🇺🇸"}
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
@@ -360,22 +360,22 @@ async def analyze_calendar_auto(
         # Format events for AI analysis
         calendar_data = format_calendar_events(events)
         
-        if not calendar_data or calendar_data == "No meetings found in the specified time period.":
+        if not calendar_data or calendar_data == "No scheduled commitments found in the specified time period.":
             return CalendarAnalysisResponse(
                 independence_percentage=95,
-                witty_message="You're 95% independent! Either you're living the dream or your calendar is broken. I'm betting on the dream.",
-                detailed_analysis="Your calendar is remarkably free of meetings. You're either incredibly efficient at avoiding unnecessary meetings, or you've achieved the mythical state of 'meeting-free existence.' Either way, congratulations on reclaiming your time!",
+                witty_message="You're 95% free! Either you've achieved the American dream of total freedom, or your calendar is having technical difficulties. We're going with the dream!",
+                detailed_analysis="Your schedule is remarkably free of commitments - a true testament to the pursuit of liberty! You've either mastered the art of saying 'no' to unnecessary obligations, or you've found the secret to living the independent life our founding fathers envisioned. Either way, you're living proof that time freedom is possible in America!",
                 meeting_stats={
                     "total_meetings": 0,
                     "total_hours": 0,
                     "avg_meeting_length": 0,
-                    "longest_meeting_free_block": "Your entire schedule"
+                    "longest_meeting_free_block": "Your entire schedule - pure freedom!"
                 },
                 recommendations=[
-                    "Keep doing whatever you're doing!",
-                    "Share your meeting avoidance secrets with colleagues",
-                    "Use this free time for focused deep work",
-                    "Consider if you're missing important collaborations"
+                    "Keep defending your time freedom like the patriots defended liberty!",
+                    "Share your time independence secrets with fellow Americans",
+                    "Use this freedom for pursuing happiness and meaningful work",
+                    "Consider if you're missing important collaborations while enjoying your liberty"
                 ]
             )
         
@@ -383,32 +383,33 @@ async def analyze_calendar_auto(
         if not openai_api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        # Create the AI prompt for analyzing meeting oppression
+        # Create the AI prompt for analyzing time freedom (4th of July themed)
         prompt = f"""
-        You are a witty AI assistant that analyzes people's meeting schedules to calculate their "meeting oppression" level.
+        You are a patriotic AI assistant that analyzes people's schedules to calculate their "time freedom" level for Independence Day. Channel the spirit of American liberty and independence!
 
-        Calendar Data for {time_period}:
+        Schedule Data for {time_period}:
         {calendar_data}
 
-        Please analyze this calendar data and provide:
-        1. An "independence percentage" (0-100%) - higher means less oppressed by meetings
-        2. A witty, sarcastic message about their meeting situation (like "You're 38% independent. Take back your damn day.")
-        3. Detailed analysis of their meeting patterns
-        4. Basic meeting statistics (total meetings, hours in meetings, etc.)
-        5. 3-5 actionable recommendations to reduce meeting oppression
+        Please analyze this schedule data and provide a patriotic assessment of their time freedom:
+        1. A "time freedom percentage" (0-100%) - higher means more independent/free time
+        2. A witty, patriotic message about their freedom situation (like "You're 76% free! Declare independence from your packed schedule!")
+        3. Detailed analysis of their time patterns with Independence Day spirit
+        4. Basic schedule statistics (total commitments, hours occupied, etc.)
+        5. 3-5 actionable recommendations to increase time freedom
 
         Consider factors like:
-        - Meeting frequency and density
-        - Back-to-back meetings
-        - Meeting length and types
-        - Time blocks for focused work
-        - Meeting-free periods
+        - Schedule density and freedom gaps
+        - Back-to-back commitments
+        - Time blocks for personal liberty
+        - Free time for pursuing happiness
+
+        Use patriotic language, references to American independence, liberty, freedom, and the pursuit of happiness. Be inspiring and motivational while maintaining the witty analysis style.
 
         Respond in JSON format:
         {{
             "independence_percentage": <number>,
-            "witty_message": "<sarcastic/witty message>",
-            "detailed_analysis": "<2-3 paragraph analysis>",
+            "witty_message": "<patriotic/witty message about time freedom>",
+            "detailed_analysis": "<2-3 paragraph analysis with patriotic spirit>",
             "meeting_stats": {{
                 "total_meetings": <number>,
                 "total_hours": <number>,
@@ -424,7 +425,7 @@ async def analyze_calendar_auto(
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a witty meeting oppression calculator that helps people realize how much their calendar controls their life."},
+                {"role": "system", "content": "You are a patriotic time freedom calculator that helps people realize how much liberty they have in their schedules. Use American independence themes and be inspiring while witty."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.8,
@@ -445,18 +446,18 @@ async def analyze_calendar_auto(
             # Fallback if JSON parsing fails
             result = {
                 "independence_percentage": 50,
-                "witty_message": "Your calendar is a hot mess, but at least you're consistently chaotic.",
-                "detailed_analysis": "Your meeting schedule suggests you're stuck in corporate purgatory. Time to rebel.",
+                "witty_message": "You're 50% free - halfway to independence! Time to stage a revolution against your packed schedule.",
+                "detailed_analysis": "Your schedule shows a mixed relationship with time freedom. Like the colonies before independence, you're experiencing some autonomy but still bound by numerous commitments. It's time to declare independence from unnecessary obligations and pursue the happiness that comes with free time!",
                 "meeting_stats": {
                     "total_meetings": len(events),
                     "total_hours": "Too many",
-                    "avg_meeting_length": "Eternal",
-                    "longest_meeting_free_block": "Probably lunch"
+                    "avg_meeting_length": "Longer than a Boston Tea Party",
+                    "longest_meeting_free_block": "Shorter than you deserve"
                 },
                 "recommendations": [
-                    "Block calendar time for actual work",
-                    "Question every recurring meeting",
-                    "Learn to say 'Could this be an email?'"
+                    "Declare independence from unnecessary commitments",
+                    "Fight for your right to free time like patriots fought for freedom",
+                    "Block out time for the pursuit of happiness"
                 ]
             }
 
@@ -468,37 +469,38 @@ async def analyze_calendar_auto(
 
 @api_router.post("/analyze-calendar", response_model=CalendarAnalysisResponse)
 async def analyze_calendar(request: CalendarAnalysisRequest):
-    """Manual calendar analysis (legacy endpoint)"""
+    """Manual calendar analysis with patriotic theme"""
     try:
         if not openai_api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
         
-        # Create the AI prompt for analyzing meeting oppression
+        # Create the AI prompt for analyzing time freedom (4th of July themed)
         prompt = f"""
-        You are a witty AI assistant that analyzes people's meeting schedules to calculate their "meeting oppression" level.
+        You are a patriotic AI assistant that analyzes people's schedules to calculate their "time freedom" level for Independence Day. Channel the spirit of American liberty and independence!
 
-        Calendar Data for {request.time_period}:
+        Schedule Data for {request.time_period}:
         {request.calendar_data}
 
-        Please analyze this calendar data and provide:
-        1. An "independence percentage" (0-100%) - higher means less oppressed by meetings
-        2. A witty, sarcastic message about their meeting situation (like "You're 38% independent. Take back your damn day.")
-        3. Detailed analysis of their meeting patterns
-        4. Basic meeting statistics (total meetings, hours in meetings, etc.)
-        5. 3-5 actionable recommendations to reduce meeting oppression
+        Please analyze this schedule data and provide a patriotic assessment of their time freedom:
+        1. A "time freedom percentage" (0-100%) - higher means more independent/free time
+        2. A witty, patriotic message about their freedom situation (like "You're 76% free! Declare independence from your packed schedule!")
+        3. Detailed analysis of their time patterns with Independence Day spirit
+        4. Basic schedule statistics (total commitments, hours occupied, etc.)
+        5. 3-5 actionable recommendations to increase time freedom
 
         Consider factors like:
-        - Meeting frequency and density
-        - Back-to-back meetings
-        - Meeting length and types
-        - Time blocks for focused work
-        - Meeting-free periods
+        - Schedule density and freedom gaps
+        - Back-to-back commitments
+        - Time blocks for personal liberty
+        - Free time for pursuing happiness
+
+        Use patriotic language, references to American independence, liberty, freedom, and the pursuit of happiness. Be inspiring and motivational while maintaining the witty analysis style.
 
         Respond in JSON format:
         {{
             "independence_percentage": <number>,
-            "witty_message": "<sarcastic/witty message>",
-            "detailed_analysis": "<2-3 paragraph analysis>",
+            "witty_message": "<patriotic/witty message about time freedom>",
+            "detailed_analysis": "<2-3 paragraph analysis with patriotic spirit>",
             "meeting_stats": {{
                 "total_meetings": <number>,
                 "total_hours": <number>,
@@ -514,7 +516,7 @@ async def analyze_calendar(request: CalendarAnalysisRequest):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a witty meeting oppression calculator that helps people realize how much their calendar controls their life."},
+                {"role": "system", "content": "You are a patriotic time freedom calculator that helps people realize how much liberty they have in their schedules. Use American independence themes and be inspiring while witty."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.8,
@@ -535,18 +537,18 @@ async def analyze_calendar(request: CalendarAnalysisRequest):
             # Fallback if JSON parsing fails
             result = {
                 "independence_percentage": 50,
-                "witty_message": "Your calendar is a hot mess, but at least you're consistently chaotic.",
-                "detailed_analysis": "Your meeting schedule suggests you're stuck in corporate purgatory. Time to rebel.",
+                "witty_message": "You're 50% free - halfway to independence! Time to stage a revolution against your packed schedule.",
+                "detailed_analysis": "Your schedule shows a mixed relationship with time freedom. Like the colonies before independence, you're experiencing some autonomy but still bound by numerous commitments. It's time to declare independence from unnecessary obligations and pursue the happiness that comes with free time!",
                 "meeting_stats": {
-                    "total_meetings": "Unknown",
+                    "total_meetings": "Several",
                     "total_hours": "Too many",
-                    "avg_meeting_length": "Eternal",
-                    "longest_meeting_free_block": "Probably lunch"
+                    "avg_meeting_length": "Longer than a Boston Tea Party",
+                    "longest_meeting_free_block": "Shorter than you deserve"
                 },
                 "recommendations": [
-                    "Block calendar time for actual work",
-                    "Question every recurring meeting",
-                    "Learn to say 'Could this be an email?'"
+                    "Declare independence from unnecessary commitments",
+                    "Fight for your right to free time like patriots fought for freedom",
+                    "Block out time for the pursuit of happiness"
                 ]
             }
 
