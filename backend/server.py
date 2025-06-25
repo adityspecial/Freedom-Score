@@ -287,7 +287,7 @@ async def auth_callback(code: str, state: str = None):
         
     except Exception as e:
         logging.error(f"OAuth callback error: {str(e)}")
-        return RedirectResponse(url="https://33ce9b05-4933-4296-b96d-89a98e35c3ef.preview.emergentagent.com/?auth=error")
+        return RedirectResponse(url="https://time-liberator.preview.emergentagent.com/?auth=error")
 
 @api_router.get("/calendar/events")
 async def get_calendar_events(
