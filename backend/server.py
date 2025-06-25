@@ -308,10 +308,33 @@ async def auth_callback(code: str, state: str = None):
             upsert=True
         )
         
+        # Also store user for JWT token lookup
+        await db.users.update_one(
+            {"user_email": user_email},
+            {"$set": {
+                "user_id": user_id,
+                "user_email": user_email,
+                "user_name": user_name,
+                "last_login": datetime.utcnow()
+            }},
+            upsert=True
+        )
+        
         logging.info(f"Successfully stored credentials for user: {user_email}")
         
-        # Redirect to frontend with success
-        return RedirectResponse(url="https://time-liberator.preview.emergentagent.com/?auth=success")
+        # Create a simple JWT token for frontend authentication
+        user_token = {
+            "user_id": user_id,
+            "user_email": user_email,
+            "user_name": user_name,
+            "exp": datetime.utcnow() + timedelta(hours=24)
+        }
+        
+        # Create a simple token (in production, use proper JWT signing)
+        jwt_token = jwt.encode(user_token, "secret", algorithm="HS256")
+        
+        # Redirect to frontend with success and token
+        return RedirectResponse(url=f"https://time-liberator.preview.emergentagent.com/?auth=success&token={jwt_token}&user={user_email}&name={user_name}")
         
     except Exception as e:
         logging.error(f"OAuth callback error: {str(e)}")
