@@ -40,7 +40,12 @@ else:
 # Google OAuth setup
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'openid', 'email', 'profile']
+SCOPES = [
+    'https://www.googleapis.com/auth/calendar.readonly', 
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
+]
 
 # Create the main app without a prefix
 app = FastAPI()
