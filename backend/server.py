@@ -253,7 +253,7 @@ async def auth_callback(code: str, state: str = None):
             scopes=SCOPES
         )
         
-        flow.redirect_uri = "https://33ce9b05-4933-4296-b96d-89a98e35c3ef.preview.emergentagent.com/api/auth/callback"
+        flow.redirect_uri = "https://time-liberator.preview.emergentagent.com/api/auth/callback"
         
         # Exchange code for token
         flow.fetch_token(code=code)
