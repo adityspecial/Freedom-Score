@@ -222,7 +222,7 @@ async def auth_google_calendar():
         )
         
         # Set redirect URI
-        flow.redirect_uri = "https://33ce9b05-4933-4296-b96d-89a98e35c3ef.preview.emergentagent.com/api/auth/callback"
+        flow.redirect_uri = "https://time-liberator.preview.emergentagent.com/api/auth/callback"
         
         # Generate OAuth URL
         authorization_url, state = flow.authorization_url(
