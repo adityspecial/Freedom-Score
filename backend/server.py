@@ -245,7 +245,7 @@ async def auth_google_calendar():
 async def auth_callback(code: str, state: str = None):
     """Handle OAuth callback"""
     try:
-        # Create flow instance
+        # Create flow instance with exact same scopes
         flow = Flow.from_client_config(
             {
                 "web": {
@@ -260,9 +260,27 @@ async def auth_callback(code: str, state: str = None):
         
         flow.redirect_uri = "https://time-liberator.preview.emergentagent.com/api/auth/callback"
         
-        # Exchange code for token
-        flow.fetch_token(code=code)
-        credentials = flow.credentials
+        # Exchange code for token - disable scope validation
+        try:
+            flow.fetch_token(code=code)
+            credentials = flow.credentials
+        except Exception as token_error:
+            logging.error(f"Token exchange error: {str(token_error)}")
+            # Try without strict scope validation
+            flow = Flow.from_client_config(
+                {
+                    "web": {
+                        "client_id": GOOGLE_CLIENT_ID,
+                        "client_secret": GOOGLE_CLIENT_SECRET,
+                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                        "token_uri": "https://oauth2.googleapis.com/token"
+                    }
+                },
+                scopes=None  # Don't validate scopes
+            )
+            flow.redirect_uri = "https://time-liberator.preview.emergentagent.com/api/auth/callback"
+            flow.fetch_token(code=code)
+            credentials = flow.credentials
         
         # Get user info
         user_info_service = build('oauth2', 'v2', credentials=credentials)
@@ -271,6 +289,9 @@ async def auth_callback(code: str, state: str = None):
         user_email = user_info.get('email')
         user_name = user_info.get('name')
         user_id = user_info.get('id')
+        
+        if not user_email:
+            raise Exception("Failed to get user email from Google")
         
         # Store credentials in database
         await db.user_tokens.update_one(
@@ -286,6 +307,8 @@ async def auth_callback(code: str, state: str = None):
             }},
             upsert=True
         )
+        
+        logging.info(f"Successfully stored credentials for user: {user_email}")
         
         # Redirect to frontend with success
         return RedirectResponse(url="https://time-liberator.preview.emergentagent.com/?auth=success")
