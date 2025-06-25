@@ -55,7 +55,7 @@ class MeetingOppressionAPITester:
             200
         )
         if success:
-            expected_message = "Meeting Oppression Calculator API with Google Calendar"
+            expected_message = "Liberty Tracker - Time Freedom Calculator API 🇺🇸"
             if response.get("message") == expected_message:
                 print(f"✅ Correct message: '{expected_message}'")
                 return True
