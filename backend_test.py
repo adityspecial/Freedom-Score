@@ -8,11 +8,15 @@ class MeetingOppressionAPITester:
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.token = None
 
-    def run_test(self, name, method, endpoint, expected_status, data=None):
+    def run_test(self, name, method, endpoint, expected_status, data=None, auth=False):
         """Run a single API test"""
         url = f"{self.base_url}/{endpoint}"
         headers = {'Content-Type': 'application/json'}
+        
+        if auth and self.token:
+            headers['Authorization'] = f'Bearer {self.token}'
         
         self.tests_run += 1
         print(f"\n🔍 Testing {name}...")
@@ -51,7 +55,7 @@ class MeetingOppressionAPITester:
             200
         )
         if success:
-            expected_message = "Meeting Oppression Calculator API"
+            expected_message = "Meeting Oppression Calculator API with Google Calendar"
             if response.get("message") == expected_message:
                 print(f"✅ Correct message: '{expected_message}'")
                 return True
@@ -60,10 +64,58 @@ class MeetingOppressionAPITester:
                 return False
         return False
 
-    def test_analyze_calendar(self, calendar_data, time_period="this week"):
-        """Test the analyze-calendar endpoint"""
+    def test_google_calendar_auth_url(self):
+        """Test the Google Calendar OAuth URL generation"""
         success, response = self.run_test(
-            "Analyze Calendar",
+            "Google Calendar Auth URL",
+            "GET",
+            "auth/google-calendar",
+            200
+        )
+        
+        if success:
+            if "authorization_url" in response and "state" in response:
+                auth_url = response["authorization_url"]
+                print(f"✅ Auth URL generated: {auth_url[:60]}...")
+                
+                # Check if URL contains required scopes
+                required_scopes = ["calendar.readonly", "openid", "email", "profile"]
+                missing_scopes = []
+                
+                for scope in required_scopes:
+                    if scope not in auth_url:
+                        missing_scopes.append(scope)
+                
+                if missing_scopes:
+                    print(f"❌ Missing scopes in auth URL: {', '.join(missing_scopes)}")
+                    return False
+                
+                print("✅ Auth URL contains all required scopes")
+                return True
+            else:
+                print("❌ Missing 'authorization_url' or 'state' in response")
+                return False
+        
+        return False
+
+    def test_google_auth(self, token):
+        """Test the Google auth endpoint (simulated)"""
+        success, response = self.run_test(
+            "Google Auth (Simulated)",
+            "POST",
+            "auth/google",
+            400,  # Expecting 400 since we're using a fake token
+            data={"token": token}
+        )
+        
+        # We expect this to fail with a 400 error since we're using a fake token
+        # But we want to verify the endpoint exists and responds
+        return success
+
+    def test_analyze_calendar(self, calendar_data, time_period="this week"):
+        """Test the analyze-calendar endpoint (manual mode)"""
+        success, response = self.run_test(
+            "Analyze Calendar (Manual)",
             "POST",
             "analyze-calendar",
             200,
@@ -106,6 +158,21 @@ class MeetingOppressionAPITester:
             return True
         
         return False
+        
+    def test_analyze_calendar_auto(self, time_period="this_week"):
+        """Test the auto calendar analysis endpoint (requires auth)"""
+        success, response = self.run_test(
+            "Analyze Calendar (Auto)",
+            "POST",
+            f"analyze-calendar-auto?time_period={time_period}",
+            401,  # Expecting 401 since we don't have a valid token
+            data={},
+            auth=True
+        )
+        
+        # We expect this to fail with a 401 error since we don't have a valid token
+        # But we want to verify the endpoint exists and responds
+        return success
 
 def main():
     # Setup
