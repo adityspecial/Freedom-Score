@@ -92,19 +92,28 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     """Get current user from JWT token"""
     try:
         token = credentials.credentials
-        payload = jwt.decode(token, GOOGLE_CLIENT_ID, algorithms=['RS256'], options={"verify_signature": False})
-        user_email = payload.get('email')
+        # Try to decode with our simple secret first
+        try:
+            payload = jwt.decode(token, "secret", algorithms=['HS256'])
+        except:
+            # Fallback to Google JWT (no verification for demo)
+            payload = jwt.decode(token, options={"verify_signature": False})
+        
+        user_email = payload.get('user_email') or payload.get('email')
         
         if not user_email:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(status_code=401, detail="Invalid token - no email found")
             
         # Get user from database
         user = await db.users.find_one({"user_email": user_email})
         if not user:
-            raise HTTPException(status_code=401, detail="User not found")
+            raise HTTPException(status_code=401, detail=f"User not found: {user_email}")
             
         return user
+    except HTTPException:
+        raise
     except Exception as e:
+        logging.error(f"Authentication error: {str(e)}")
         raise HTTPException(status_code=401, detail="Invalid authentication")
 
 def get_calendar_service(access_token: str):
